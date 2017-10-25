@@ -29,19 +29,25 @@
 #define NUM_LEDS 60
 CRGB leds[NUM_LEDS];
 
+// variable to hold LED integers that correspond to leds[int] and alphabet
 int letters[26];
 
+// arduino setup function
 void setup() {
   FastLED.addLeds<NEOPIXEL, 6>(leds, NUM_LEDS);
-  setupLetters();
-  clearLeds();
+  setupLetters(); // setup our letters first
+  clearLeds(); // clear the leds just in case
 }
 
+// arduino main loop function
 void loop() {
   message("I WILL KILL YOU", 1000);
   delay(1000);
   message("I WANT BRAINS DAMMIT", 1000);
   delay(1000);
+
+  // if we are going to have user inputted messages, the code should go here to read from the serial
+  // and run the message function
 }
 
 void setupLetters(){
@@ -128,6 +134,7 @@ void setupLetters(){
 
 }
 
+// function to clear ALL of the LEDS
 void clearLeds() {
   for(int i = 0; i < NUM_LEDS; i++){
     leds[i] = CRGB::Black;
@@ -136,13 +143,16 @@ void clearLeds() {
   }
 }
 
+// function that turns on the LED corresponding to each letter of the message sent
 void message(String words, int delayLength) {
-  String ucWords = words.toUpperCase();
+
+  String ucWords = words.toUpperCase(); // make them all uppercase for consistency
 
   int letterInt = -1;
 
   for(int i = 0; i < ucWords.length; i++){
     String letter = ucWords[i];
+
     switch(letter){
       case "A":
         letterInt = 0;
@@ -254,16 +264,18 @@ void message(String words, int delayLength) {
       break;
     }
 
+    // before we show the LED we should clear the leds
     clearLeds();
 
+    // test if the letterInt is valid before we try and send it to FastLED
     if(letterInt >= 0 && letterInt <= NUM_LEDS - 1){
       leds[letterInt] = CRGB::White;
       FastLED.show();
-      delay(delayLength);
+      delay(delayLength); // we will delay each char of a word by delayLength
     }
 
     if(letterInt < 0){
-      delay(delayLength * 2);
+      delay(delayLength * 2); // we will delay spaces, commas, and other non-alphas with double the delayLength
     }
 
   }
