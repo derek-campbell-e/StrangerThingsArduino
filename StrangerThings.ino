@@ -139,7 +139,72 @@ void clearLeds() {
   for(int i = 0; i < NUM_LEDS; i++){
     leds[i] = CRGB::Black;
     FastLED.show();
-    delay(5);
+  }
+}
+
+// hopefully this method is non-blocking 
+void fadeOutLeds(){
+
+  int animationTime = 500;
+
+  int startLED = 256;
+  int endLED = 0;
+
+  unsigned long start = millis();
+  unsigned long delta = millis() - start;
+
+  while(delta < animationTime) {
+    float pos = float(delta) / float(animationTime);
+    int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
+    for(int i = 0; i < NUM_LEDS; i++){
+      leds[i].fadeToBlackBy(ledAmount);
+    }
+    delta = millis() - start;
+  }
+
+
+}
+
+// linear interpolation function
+void lerp(float x, float x0, float x1, float y0, float, y1) {
+  // clamp
+  x = x > x1 ? x1 : x;
+  x = x < x0 ? x0 : x;
+
+  // calculate linear interpolation
+  return y0 + (y1 - y0) * ((x-x0) / (x1-x0));
+}
+
+// function to fade a led in or out using linear interpolation
+void animateLED(String direction, int ledInteger, int animationTime) {
+  int startLED = 0;
+  int endLED = 256;
+
+  switch(direction){
+
+    case 'in':
+      startLED = 0;
+      endLED = 256;
+    break;
+
+    case 'out':
+      startLED = 256;
+      endLED = 0;
+    break;
+
+    default:
+    break;
+  }
+
+  unsigned long start = millis();
+  unsigned long delta = millis() - start;
+
+  while(delta < animationTime) {
+    float pos = float(delta) / float(animationTime);
+    int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
+    leds[ledInteger].fadeToBlackBy(ledAmount);
+    FastLED.show();
+    delta = millis() - start;
   }
 }
 
@@ -269,8 +334,9 @@ void message(String words, int delayLength) {
 
     // test if the letterInt is valid before we try and send it to FastLED
     if(letterInt >= 0 && letterInt <= NUM_LEDS - 1){
-      leds[letterInt] = CRGB::White;
-      FastLED.show();
+      //leds[letterInt] = CRGB::White;
+      //FastLED.show();
+      animateLED('in', letters[letterInt], 600);  // this should fade in the letter over 600ms
       delay(delayLength); // we will delay each char of a word by delayLength
     }
 
