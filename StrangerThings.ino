@@ -34,6 +34,7 @@ int letters[26];
 
 // arduino setup function
 void setup() {
+  Serial.begin(9600);
   FastLED.addLeds<NEOPIXEL, 6>(leds, NUM_LEDS);
   setupLetters(); // setup our letters first
   clearLeds(); // clear the leds just in case
@@ -166,7 +167,7 @@ void fadeOutLeds(){
 }
 
 // linear interpolation function
-void lerp(float x, float x0, float x1, float y0, float, y1) {
+float lerp(float x, float x0, float x1, float y0, float y1) {
   // clamp
   x = x > x1 ? x1 : x;
   x = x < x0 ? x0 : x;
@@ -176,24 +177,18 @@ void lerp(float x, float x0, float x1, float y0, float, y1) {
 }
 
 // function to fade a led in or out using linear interpolation
-void animateLED(String direction, int ledInteger, int animationTime) {
+void animateLED(String dir, int ledInteger, int animationTime) {
   int startLED = 0;
   int endLED = 256;
 
-  switch(direction){
+  if (dir.equals("in")) {
+    startLED = 0;
+    endLED = 256;
+  }
 
-    case 'in':
-      startLED = 0;
-      endLED = 256;
-    break;
-
-    case 'out':
-      startLED = 256;
-      endLED = 0;
-    break;
-
-    default:
-    break;
+  if (dir.equals("out")) {
+    startLED = 256;
+    endLED = 0;
   }
 
   unsigned long start = millis();
@@ -201,7 +196,7 @@ void animateLED(String direction, int ledInteger, int animationTime) {
 
   while(delta < animationTime) {
     float pos = float(delta) / float(animationTime);
-    int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
+    int ledAmount = (int)lerp(pos, 0.0, 1.0, startLED, endLED);
     leds[ledInteger].fadeToBlackBy(ledAmount);
     FastLED.show();
     delta = millis() - start;
@@ -211,123 +206,118 @@ void animateLED(String direction, int ledInteger, int animationTime) {
 // function that turns on the LED corresponding to each letter of the message sent
 void message(String words, int delayLength) {
 
-  String ucWords = words.toUpperCase(); // make them all uppercase for consistency
+  String ucWords = words;
+  ucWords.toUpperCase(); // make them all uppercase for consistency
 
   int letterInt = -1;
 
-  for(int i = 0; i < ucWords.length; i++){
-    String letter = ucWords[i];
-
-    switch(letter){
-      case "A":
-        letterInt = 0;
-      break;
-
-      case "B":
-        letterInt = 1;
-      break;
-
-      case "C":
-        letterInt = 2;
-      break;
-
-      case "D":
-        letterInt = 3;
-      break;
-
-      case "E":
-        letterInt = 4;
-      break;
-
-      case "F":
-        letterInt = 5;
-      break;
-
-      case "G":
-        letterInt = 6;
-      break;
-
-      case "H":
-        letterInt = 7;
-      break;
-
-      case "I":
-        letterInt = 8;
-      break;
-
-      case "J":
-        letterInt = 9;
-      break;
-
-      case "K":
-        letterInt = 10;
-      break;
-
-      case "L":
-        letterInt = 11;
-      break;
-
-      case "M":
-        letterInt = 12;
-      break;
-
-      case "N":
-        letterInt = 13;
-      break;
-
-      case "O":
-        letterInt = 14;
-      break;
-
-      case "P":
-        letterInt = 15;
-      break;
-
-      case "Q":
-        letterInt = 16;
-      break;
-
-      case "R":
-        letterInt = 17;
-      break;
-
-      case "S":
-        letterInt = 18;
-      break;
-
-      case "T":
-        letterInt = 19;
-      break;
-
-      case "U":
-        letterInt = 20;
-      break;
-
-      case "V":
-        letterInt = 21;
-      break;
-
-      case "W":
-        letterInt = 22;
-      break;
-
-      case "X":
-        letterInt = 23;
-      break;
-
-      case "Y":
-        letterInt = 24;
-      break;
-
-      case "Z":
-        letterInt = 25;
-      break;
-
-      // for spaces or other
-      default:
-        letterInt = -2;
-      break;
+  for(int i = 0; i < ucWords.length(); i++){
+    String letter = (String)ucWords.charAt(i);
+    if (letter == "A") {
+       letterInt = 0;
     }
+    
+    if (letter == "B") {
+       letterInt = 1;
+    }
+    
+    if (letter == "C") {
+       letterInt = 2;
+    }
+    
+    if (letter == "D") {
+       letterInt = 3;
+    }
+    
+    if (letter == "E") {
+       letterInt = 4;
+    }
+    
+    if (letter == "F") {
+       letterInt = 5;
+    }
+    
+    if (letter == "G") {
+       letterInt = 6;
+    }
+    
+    if (letter == "H") {
+       letterInt = 7;
+    }
+    
+    if (letter == "I") {
+       letterInt = 8;
+    }
+    
+    if (letter == "J") {
+       letterInt = 9;
+    }
+    
+    if (letter == "K") {
+       letterInt = 10;
+    }
+    
+    if (letter == "L") {
+       letterInt = 11;
+    }
+    
+    if (letter == "M") {
+       letterInt = 12;
+    }
+    
+    if (letter == "N") {
+       letterInt = 13;
+    }
+    
+    if (letter == "O") {
+       letterInt = 14;
+    }
+    
+    if (letter == "P") {
+       letterInt = 15;
+    }
+    
+    if (letter == "Q") {
+       letterInt = 16;
+    }
+    
+    if (letter == "R") {
+       letterInt = 17;
+    }
+    
+    if (letter == "S") {
+       letterInt = 18;
+    }
+    
+    if (letter == "T") {
+       letterInt = 19;
+    }
+    
+    if (letter == "U") {
+       letterInt = 20;
+    }
+    
+    if (letter == "V") {
+       letterInt = 21;
+    }
+    
+    if (letter == "W") {
+       letterInt = 22;
+    }
+    
+    if (letter == "X") {
+       letterInt = 23;
+    }
+    
+    if (letter == "Y") {
+       letterInt = 24;
+    }
+    
+    if (letter == "Z") {
+       letterInt = 25;
+    }
+
+
 
     // before we show the LED we should clear the leds
     clearLeds();
@@ -336,8 +326,12 @@ void message(String words, int delayLength) {
     if(letterInt >= 0 && letterInt <= NUM_LEDS - 1){
       //leds[letterInt] = CRGB::White;
       //FastLED.show();
-      animateLED('in', letters[letterInt], 600);  // this should fade in the letter over 600ms
+      animateLED("in", letters[letterInt], 600);  // this should fade in the letter over 600ms
       delay(delayLength); // we will delay each char of a word by delayLength
+      Serial.print("SHOWING LETTER -");
+      Serial.println(letter);
+      Serial.println("");
+      
     }
 
     if(letterInt < 0){
