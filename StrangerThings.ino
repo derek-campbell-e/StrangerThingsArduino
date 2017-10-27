@@ -1,22 +1,39 @@
 #include <FastLED.h>
 
-#define NUM_LEDS 50
+#define NUM_LEDS 100
+#define AVAIL 32
+
 CRGB leds[NUM_LEDS];
 
 // variable to hold LED integers that correspond to leds[int] and alphabet
+// overlap / incorrect values because the StrangerThingsBoard isn't a full or correct alphabet
 int letters[30];
+
+// an array for the availLeds considering we are going to use every third led
+int availLeds[AVAIL];
+
+// function to set up the leds that are available
+void setupAvailLeds(){
+  int baseLED = 0;
+  int spacing = 2;
+
+  for(int i = 0; i < AVAIL; i ++) {
+    availLeds[i] = baseLED + i + spacing;
+  }
+}
 
 // arduino setup function
 void setup() {
   Serial.begin(9600);
   FastLED.addLeds<WS2811, 6>(leds, NUM_LEDS);
+  setupAvailLeds();
   setupLetters(); // setup our letters first
   clearLeds(); // clear the leds just in case
 }
 
 // arduino main loop function
 void loop() {
-  
+
   fadeInLeds();
   delay(2000);
   fadeOutLeds();
@@ -24,8 +41,8 @@ void loop() {
   message("ESC@P# V!$", 500);
   fadeOutLeds();
   delay(2000);
-  
-  
+
+
   // if we are going to have user inputted messages, the code should go here to read from the serial
   // and run the message function
 }
@@ -34,7 +51,8 @@ void loop() {
 void turnOnAllLights(){
   FastLED.clear();
   for(int led = 0; led < NUM_LEDS; led++) {
-    leds[led] = CRGB::White;
+    int availInt = availLedToLed(led);
+    leds[availInt] = CRGB::White;
   }
   FastLED.show();
 }
@@ -43,103 +61,116 @@ void setupLetters(){
   // baseLED, if letter A does not start on the first pixel
   int baseLED = 0;
 
+  // spacing since wire distance between leds is so small
+  int spacing = 0; // zero because i believe we handled it with our availLeds
+
   // letter A
-  letters[0] = baseLED + 0;
+  letters[0] = baseLED + spacing + 0;
 
   // letter B
-  letters[1] = baseLED + 1;
+  letters[1] = baseLED + spacing + 1;
 
   // letter C
-  letters[2] = baseLED + 12;
+  letters[2] = baseLED + spacing + 12;
 
   // letter D
-  letters[3] = baseLED + 3;
+  letters[3] = baseLED + spacing + 3;
 
   // letter E
-  letters[4] = baseLED + 14;
+  letters[4] = baseLED + spacing + 14;
 
   // letter F
-  letters[5] = baseLED + 5;
+  letters[5] = baseLED + spacing + 5;
 
   // letter G
-  letters[6] = baseLED + 6;
+  letters[6] = baseLED + spacing + 6;
 
   // letter H
-  letters[7] = baseLED + 7;
+  letters[7] = baseLED + spacing + 7;
 
   // letter I
-  letters[8] = baseLED + 16;
+  letters[8] = baseLED + spacing + 16;
 
   // letter J
-  letters[9] = baseLED + 15;
+  letters[9] = baseLED + spacing + 15;
 
   // letter K
-  letters[10] = baseLED + 14;
+  letters[10] = baseLED + spacing + 14;
 
   // letter L
-  letters[11] = baseLED + 18;
+  letters[11] = baseLED + spacing + 18;
 
   // letter M
-  letters[12] = baseLED + 12;
+  letters[12] = baseLED + spacing + 12;
 
   // letter N
-  letters[13] = baseLED + 11;
+  letters[13] = baseLED + spacing + 11;
 
   // letter O
-  letters[14] = baseLED + 2;
+  letters[14] = baseLED + spacing + 2;
 
   // letter P
-  letters[15] = baseLED + 10;
+  letters[15] = baseLED + spacing + 10;
 
   // letter Q
-  letters[16] = baseLED + 8;
+  letters[16] = baseLED + spacing + 8;
 
   // letter R
-  letters[17] = baseLED + 17;
+  letters[17] = baseLED + spacing + 17;
 
   // letter S
-  letters[18] = baseLED + 13;
+  letters[18] = baseLED + spacing + 13;
 
   // letter T
-  letters[19] = baseLED + 19;
+  letters[19] = baseLED + spacing + 19;
 
   // letter U
-  letters[20] = baseLED + 20;
+  letters[20] = baseLED + spacing + 20;
 
   // letter V
-  letters[21] = baseLED + 20;
+  letters[21] = baseLED + spacing + 20;
 
   // letter W
-  letters[22] = baseLED + 22;
+  letters[22] = baseLED + spacing + 22;
 
   // letter X
-  letters[23] = baseLED + 23;
+  letters[23] = baseLED + spacing + 23;
 
   // letter Y
-  letters[24] = baseLED + 24;
+  letters[24] = baseLED + spacing + 24;
 
   // letter Z
-  letters[25] = baseLED + 25;
+  letters[25] = baseLED + spacing + 25;
 
   // letter A2 [@]
-  letters[26] = baseLED + 11;
+  letters[26] = baseLED + spacing + 11;
 
   // letters E2 [#]
-  letters[27] = baseLED + 9;
+  letters[27] = baseLED + spacing + 9;
 
   // letters I2 [!]
-  letters[28] = baseLED + 21;
+  letters[28] = baseLED + spacing + 21;
 
   // letters P2 [$]
-  letters[29] = baseLED + 22;
+  letters[29] = baseLED + spacing + 22;
 
 
+}
+
+int availLedToLed(int availInt) {
+  // just in case
+  if(true) {
+    return availLeds[availInt];
+  }
+
+  return availInt;
 }
 
 // function to clear ALL of the LEDS
 void clearLeds() {
   for(int i = 0; i < NUM_LEDS; i++){
-    leds[i] = CRGB::Black;
+    int availInt = availLedToLed(i);
+    leds[availInt] = CRGB::Black;
   }
   FastLED.show();
 }
@@ -161,15 +192,16 @@ void fadeOutLeds(){
     float pos = float(delta) / float(animationTime);
     int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
     for(int i = 0; i < NUM_LEDS; i++){
-      leds[i] = CRGB::White;
-      leds[i].fadeToBlackBy(ledAmount);
+      int availInt = availLedToLed(i);
+      leds[availInt] = CRGB::White;
+      leds[availInt].fadeToBlackBy(ledAmount);
     }
     FastLED.show();
     delta = millis() - start;
   }
 }
 
-// hopefully this method is non-blocking 
+// hopefully this method is non-blocking
 void fadeInLeds(){
 
   Serial.println("fading in leds...");
@@ -186,13 +218,14 @@ void fadeInLeds(){
     float pos = float(delta) / float(animationTime);
     int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
     for(int i = 0; i < NUM_LEDS; i++){
-      leds[i] = CRGB::White;
-      leds[i].fadeLightBy(ledAmount);
+      int availInt = availLedToLed(i);
+      leds[availInt] = CRGB::White;
+      leds[availInt].fadeLightBy(ledAmount);
     }
     FastLED.show();
     delta = millis() - start;
   }
-  
+
 }
 
 // linear interpolation function
@@ -226,8 +259,9 @@ void animateLED(String dir, int ledInteger, int animationTime) {
   while(delta < animationTime) {
     float pos = float(delta) / float(animationTime);
     int ledAmount = (int)lerp(pos, 0.0, 1.0, startLED, endLED);
-    leds[ledInteger] = CRGB::White;
-    leds[ledInteger].fadeToBlackBy(ledAmount);
+    int availInt = availLedToLed(ledInteger);
+    leds[availInt] = CRGB::White;
+    leds[availInt].fadeToBlackBy(ledAmount);
     FastLED.show();
     delta = millis() - start;
   }
@@ -244,7 +278,7 @@ void message(String words, int delayLength) {
   for(int i = 0; i < ucWords.length(); i++){
     String letter = (String)ucWords.charAt(i);
     letterInt = -1;
-    
+
     if (letter == "A") {
        letterInt = 0;
     }
