@@ -1,30 +1,4 @@
-#include <bitswap.h>
-#include <chipsets.h>
-#include <color.h>
-#include <colorpalettes.h>
-#include <colorutils.h>
-#include <controller.h>
-#include <cpp_compat.h>
-#include <dmx.h>
 #include <FastLED.h>
-#include <fastled_config.h>
-#include <fastled_delay.h>
-#include <fastled_progmem.h>
-#include <fastpin.h>
-#include <fastspi.h>
-#include <fastspi_bitbang.h>
-#include <fastspi_dma.h>
-#include <fastspi_nop.h>
-#include <fastspi_ref.h>
-#include <fastspi_types.h>
-#include <hsv2rgb.h>
-#include <led_sysdefs.h>
-#include <lib8tion.h>
-#include <noise.h>
-#include <pixelset.h>
-#include <pixeltypes.h>
-#include <platforms.h>
-#include <power_mgt.h>
 
 #define NUM_LEDS 50
 CRGB leds[NUM_LEDS];
@@ -42,6 +16,7 @@ void setup() {
 
 // arduino main loop function
 void loop() {
+  
   fadeInLeds();
   delay(2000);
   fadeOutLeds();
@@ -49,6 +24,8 @@ void loop() {
   message("ESC@P# V!$", 500);
   fadeOutLeds();
   delay(2000);
+  
+  
   // if we are going to have user inputted messages, the code should go here to read from the serial
   // and run the message function
 }
@@ -184,6 +161,7 @@ void fadeOutLeds(){
     float pos = float(delta) / float(animationTime);
     int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
     for(int i = 0; i < NUM_LEDS; i++){
+      leds[i] = CRGB::White;
       leds[i].fadeToBlackBy(ledAmount);
     }
     FastLED.show();
@@ -208,11 +186,13 @@ void fadeInLeds(){
     float pos = float(delta) / float(animationTime);
     int ledAmount = lerp(pos, 0.0, 1.0, startLED, endLED);
     for(int i = 0; i < NUM_LEDS; i++){
+      leds[i] = CRGB::White;
       leds[i].fadeLightBy(ledAmount);
     }
     FastLED.show();
     delta = millis() - start;
   }
+  
 }
 
 // linear interpolation function
@@ -246,6 +226,7 @@ void animateLED(String dir, int ledInteger, int animationTime) {
   while(delta < animationTime) {
     float pos = float(delta) / float(animationTime);
     int ledAmount = (int)lerp(pos, 0.0, 1.0, startLED, endLED);
+    leds[ledInteger] = CRGB::White;
     leds[ledInteger].fadeToBlackBy(ledAmount);
     FastLED.show();
     delta = millis() - start;
@@ -262,6 +243,8 @@ void message(String words, int delayLength) {
 
   for(int i = 0; i < ucWords.length(); i++){
     String letter = (String)ucWords.charAt(i);
+    letterInt = -1;
+    
     if (letter == "A") {
        letterInt = 0;
     }
